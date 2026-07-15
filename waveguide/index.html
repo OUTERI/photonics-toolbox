@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>波导色散 — 光子学工具箱</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+
+  <header class="app-header">
+    <h1>📊 波导色散</h1>
+    <p class="subtitle"><a href="../">← 返回工具列表</a> | Si₃N₄ 脊形波导 FEM 仿真数据插值</p>
+  </header>
+
+  <div class="card">
+    <div class="card-header">波导参数</div>
+    <div class="input-group">
+      <div class="input-label-row">
+        <label for="wgWidthSlider">波导宽度</label>
+        <span class="unit">参考范围 0.8 – 7.0 μm</span>
+      </div>
+      <div class="slider-row">
+        <input type="range" id="wgWidthSlider" min="0.8" max="7.0" step="0.01" value="1.5">
+        <div class="number-input-wrap">
+          <input type="number" id="wgWidthInput" min="0.5" max="10" step="0.01" value="1.50">
+          <span class="unit-suffix">μm</span>
+        </div>
+      </div>
+      <div class="range-labels">
+        <span>0.8</span><span>1.5</span><span>2.5</span><span>4.0</span><span>5.5</span><span>7.0</span>
+      </div>
+      <div class="warning" id="wgWarning">⚠ 输入宽度超出仿真数据范围 (0.8–7.0 μm)，结果为线性外推，精度有限。</div>
+    </div>
+  </div>
+
+  <div class="results-grid cols-4" id="wgResults">
+    <div class="result-card">
+      <div class="param-name">色散 β₂</div>
+      <div class="param-value" id="wgBeta2">--</div>
+      <div class="param-unit">ps²/km</div>
+    </div>
+    <div class="result-card">
+      <div class="param-name">有效模场面积 A<sub>eff</sub></div>
+      <div class="param-value" id="wgAeff">--</div>
+      <div class="param-unit">×10⁻¹² m²</div>
+    </div>
+    <div class="result-card">
+      <div class="param-name">群折射率 n<sub>g</sub></div>
+      <div class="param-value" id="wgNg">--</div>
+      <div class="param-unit">—</div>
+    </div>
+    <div class="result-card">
+      <div class="param-name">有效折射率 n<sub>eff</sub></div>
+      <div class="param-value" id="wgNeff">--</div>
+      <div class="param-unit">—</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h3>数据曲线</h3>
+    <div class="chart-tabs" id="wgChartTabs">
+      <button class="chart-tab active" data-series="beta2">β₂</button>
+      <button class="chart-tab" data-series="aeff">A<sub>eff</sub></button>
+      <button class="chart-tab" data-series="ng">n<sub>g</sub></button>
+      <button class="chart-tab" data-series="neff">n<sub>eff</sub></button>
+      <button class="chart-tab" data-series="all">全部</button>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="wgChart"></canvas>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h3 id="wgTableToggle">
+      仿真数据参考表
+      <span class="toggle-icon" id="wgToggleIcon">▼</span>
+    </h3>
+    <div id="wgTableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Width (μm)</th>
+            <th>β₂ (ps²/km)</th>
+            <th>A<sub>eff</sub> (×10⁻¹² m²)</th>
+            <th>n<sub>g</sub></th>
+            <th>n<sub>eff</sub></th>
+          </tr>
+        </thead>
+        <tbody id="wgTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    仿真数据来源：FEM 数值模拟 · Si₃N₄ 平台 · λ = 1550 nm · 仅供参考
+  </footer>
+
+</div>
+
+<script src="waveguide.js"></script>
+</body>
+</html>

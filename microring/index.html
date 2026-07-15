@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微环 FSR — 光子学工具箱</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+
+  <header class="app-header">
+    <h1>🔄 微环 FSR</h1>
+    <p class="subtitle"><a href="../">← 返回工具列表</a> | 自由光谱范围 ↔ 环半径换算</p>
+  </header>
+
+  <div class="card">
+    <div class="card-header">参数设置</div>
+    <div class="formula-block">R = c / (n<sub>g</sub> · 2π · FSR)</div>
+
+    <div class="preset-row" id="mrPresets">
+      <span style="font-size:0.8rem;color:var(--color-text-secondary);align-self:center">预设波导：</span>
+      <button class="preset-btn active" data-ng="1.85">标准 Si₃N₄<br><span style="font-size:0.65rem">700×1500 nm</span></button>
+      <button class="preset-btn" data-ng="1.92">厚膜 Si₃N₄<br><span style="font-size:0.65rem">800×2000 nm</span></button>
+      <button class="preset-btn" data-ng="1.72">薄膜 Si₃N₄<br><span style="font-size:0.65rem">400×1000 nm</span></button>
+      <button class="preset-btn" data-ng="1.78">自定义</button>
+    </div>
+
+    <div class="input-group">
+      <div class="input-label-row">
+        <label for="mrFsr">FSR（自由光谱范围）</label>
+        <span class="unit" id="mrFsrVal">100 GHz</span>
+      </div>
+      <input type="range" id="mrFsr" min="10" max="1000" step="5" value="100">
+    </div>
+    <div class="input-group">
+      <div class="input-label-row">
+        <label for="mrNg">群折射率 n<sub>g</sub></label>
+        <span class="unit" id="mrNgVal">1.85</span>
+      </div>
+      <input type="range" id="mrNg" min="1.50" max="2.20" step="0.01" value="1.85">
+    </div>
+    <div class="input-group">
+      <div class="input-label-row">
+        <label for="mrLam">中心波长 λ</label>
+        <span class="unit" id="mrLamVal">1550 nm</span>
+      </div>
+      <input type="range" id="mrLam" min="1000" max="2000" step="10" value="1550">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">计算结果</div>
+    <div class="results-grid cols-3" id="mrResults">
+      <div class="result-card">
+        <div class="param-name">环半径 R</div>
+        <div class="param-value" id="mrR">—</div>
+        <div class="param-unit">μm</div>
+      </div>
+      <div class="result-card">
+        <div class="param-name">周长 L = 2πR</div>
+        <div class="param-value" id="mrL">—</div>
+        <div class="param-unit">μm</div>
+      </div>
+      <div class="result-card">
+        <div class="param-name">直径 2R</div>
+        <div class="param-value" id="mrD">—</div>
+        <div class="param-unit">μm</div>
+      </div>
+      <div class="result-card">
+        <div class="param-name">FSR（波长域）</div>
+        <div class="param-value" id="mrFsrNm">—</div>
+        <div class="param-unit">nm</div>
+      </div>
+      <div class="result-card">
+        <div class="param-name">模式间距 Δν</div>
+        <div class="param-value" id="mrFsrGhz">—</div>
+        <div class="param-unit">GHz</div>
+      </div>
+      <div class="result-card">
+        <div class="param-name">腔内光子寿命 τ<br><span style="font-size:0.65rem;color:var(--color-text-tertiary)">(假设 Q = 10⁶)</span></div>
+        <div class="param-value" id="mrTau">—</div>
+        <div class="param-unit">ns</div>
+      </div>
+    </div>
+    <div class="info-note" id="mrNote"></div>
+  </div>
+
+  <footer class="app-footer">
+    仿真数据来源：FEM 数值模拟 · Si₃N₄ 平台 · λ = 1550 nm · 仅供参考
+  </footer>
+
+</div>
+
+<script src="microring.js"></script>
+</body>
+</html>

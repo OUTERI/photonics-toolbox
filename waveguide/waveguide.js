@@ -1,10 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════
-   Waveguide Dispersion Calculator Module
+   Waveguide Dispersion Calculator
    Si₃N₄ ridge waveguide — β₂, Aeff, ng, neff vs width
-   Interface: { init(container), resize() }
    ═══════════════════════════════════════════════════════════════ */
 
-const WaveguideModule = (() => {
+(function() {
+  'use strict';
 
   // ── FEM Simulation Data ───────────────────────────────────
   const w = [
@@ -75,9 +75,8 @@ const WaveguideModule = (() => {
 
   // ── State ─────────────────────────────────────────────────
   let currentSeries = 'beta2';
-  let canvas, ctx, container;
+  let canvas, ctx;
 
-  // ── DOM Refs ──────────────────────────────────────────────
   function $(id) { return document.getElementById(id); }
 
   // ── Chart Helpers ─────────────────────────────────────────
@@ -221,7 +220,6 @@ const WaveguideModule = (() => {
       ctx.fillText(x.toFixed(2), cx, pad.top + ph + 30);
     }
 
-    // ── Series dispatch ────────────────────────────────────
     if (currentSeries === 'beta2') {
       const yMin = 950, yMax = 2150;
       drawGrid(yMin, yMax);
@@ -269,7 +267,7 @@ const WaveguideModule = (() => {
     }
   }
 
-  // ── Update results + highlight table ─────────────────────
+  // ── Update results ────────────────────────────────────────
   function updateResults(width) {
     const r = computeAll(width);
     $('wgBeta2').textContent = fmt5(r.beta2_ps2km);
@@ -286,13 +284,13 @@ const WaveguideModule = (() => {
     const tbody = $('wgTableBody');
     const rows = w.map((wi, i) => {
       const ae_disp = (aeff[i] * 1e12);
-      return `<tr data-w="${wi}">
-        <td>${wi.toFixed(1)}</td>
-        <td>${fmt5(beta2[i])}</td>
-        <td>${fmt5(ae_disp)}</td>
-        <td>${fmt5(ng[i])}</td>
-        <td>${fmt5(neff[i])}</td>
-      </tr>`;
+      return '<tr data-w="' + wi + '">' +
+        '<td>' + wi.toFixed(1) + '</td>' +
+        '<td>' + fmt5(beta2[i]) + '</td>' +
+        '<td>' + fmt5(ae_disp) + '</td>' +
+        '<td>' + fmt5(ng[i]) + '</td>' +
+        '<td>' + fmt5(neff[i]) + '</td>' +
+        '</tr>';
     }).join('');
     tbody.innerHTML = rows;
   }
@@ -310,18 +308,22 @@ const WaveguideModule = (() => {
     }
   }
 
-  // ── Event Binding ─────────────────────────────────────────
-  function bindEvents() {
+  // ── Init ──────────────────────────────────────────────────
+  function init() {
+    canvas = $('wgChart');
+    ctx = canvas.getContext('2d');
+    buildTable();
+
     const slider = $('wgWidthSlider');
     const input  = $('wgWidthInput');
 
-    slider.addEventListener('input', () => {
+    slider.addEventListener('input', function() {
       const v = parseFloat(slider.value);
       input.value = v.toFixed(2);
       updateResults(v);
     });
 
-    input.addEventListener('input', () => {
+    input.addEventListener('input', function() {
       let v = parseFloat(input.value);
       if (isNaN(v)) return;
       v = Math.max(0.5, Math.min(10, v));
@@ -329,8 +331,7 @@ const WaveguideModule = (() => {
       updateResults(v);
     });
 
-    // Table toggle
-    $('wgTableToggle').addEventListener('click', () => {
+    $('wgTableToggle').addEventListener('click', function() {
       const wrap = $('wgTableWrap');
       const icon = $('wgToggleIcon');
       wrap.classList.toggle('hidden');
@@ -338,31 +339,22 @@ const WaveguideModule = (() => {
       setTimeout(drawChart, 50);
     });
 
-    // Chart tabs
-    document.querySelectorAll('#wgChartTabs .chart-tab').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#wgChartTabs .chart-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#wgChartTabs .chart-tab').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#wgChartTabs .chart-tab').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
         currentSeries = btn.dataset.series;
         drawChart();
       });
     });
+
+    window.addEventListener('resize', function() {
+      drawChart();
+    });
+
+    updateResults(1.5);
   }
 
-  // ── Public Interface ──────────────────────────────────────
-  return {
-    init(el) {
-      container = el;
-      canvas = $('wgChart');
-      ctx = canvas.getContext('2d');
-      buildTable();
-      bindEvents();
-      updateResults(1.5);
-    },
-
-    resize() {
-      if (canvas && ctx) drawChart();
-    }
-  };
+  document.addEventListener('DOMContentLoaded', init);
 
 })();

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>晶圆切割 — 光子学工具箱</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+
+  <header class="app-header">
+    <h1>🪧 晶圆切割</h1>
+    <p class="subtitle"><a href="../">← 返回工具列表</a> | 中心对齐网格法 Die 数量估算</p>
+  </header>
+
+  <div class="card">
+    <div class="split-layout">
+      <div class="split-controls">
+        <div class="card-header">晶圆参数设置</div>
+
+        <div class="input-group">
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;">晶圆尺寸</label>
+          <select id="wfSize">
+            <option value="4">4 Inch (100 mm)</option>
+            <option value="6">6 Inch (150 mm)</option>
+            <option value="8" selected>8 Inch (200 mm)</option>
+            <option value="12">12 Inch (300 mm)</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:10px;" class="input-group">
+          <div style="flex:1">
+            <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;">Die 宽度 X (mm)</label>
+            <input type="number" id="wfDieX" value="5.0" step="0.1" min="0.1" style="width:100%;padding:7px 10px;border:1px solid var(--color-border);border-radius:var(--radius);font-size:0.9rem;">
+          </div>
+          <div style="flex:1">
+            <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;">Die 高度 Y (mm)</label>
+            <input type="number" id="wfDieY" value="5.0" step="0.1" min="0.1" style="width:100%;padding:7px 10px;border:1px solid var(--color-border);border-radius:var(--radius);font-size:0.9rem;">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;" class="input-group">
+          <div style="flex:1">
+            <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;">切割道宽度 (mm)</label>
+            <input type="number" id="wfScribe" value="0.10" step="0.01" min="0" style="width:100%;padding:7px 10px;border:1px solid var(--color-border);border-radius:var(--radius);font-size:0.9rem;">
+          </div>
+          <div style="flex:1">
+            <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;">边缘去除 (mm)</label>
+            <input type="number" id="wfEdge" value="3.0" step="0.1" min="0" style="width:100%;padding:7px 10px;border:1px solid var(--color-border);border-radius:var(--radius);font-size:0.9rem;">
+          </div>
+        </div>
+
+        <div class="results-panel">
+          <h3>计算结果</h3>
+          <div class="result-item">
+            <span>有效芯片 (Good Dies):</span>
+            <strong id="wfGood">0</strong>
+          </div>
+          <div class="result-item">
+            <span>残缺/边缘芯片 (Partial):</span>
+            <span id="wfPartial">0</span>
+          </div>
+          <div class="result-item">
+            <span>总计 (Total):</span>
+            <span id="wfTotal">0</span>
+          </div>
+          <div class="result-item">
+            <span>晶圆面积利用率:</span>
+            <span id="wfUtil">0%</span>
+          </div>
+        </div>
+
+        <p class="info-note">* 计算基于中心对齐网格法。1 Inch = 25.4 mm。</p>
+      </div>
+
+      <div class="split-viz">
+        <div class="wafer-viz">
+          <canvas id="wfCanvas" width="500" height="500"></canvas>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-box" style="background:#2ecc71;"></div> 有效 Die</div>
+            <div class="legend-item"><div class="legend-box" style="background:#e74c3c;"></div> 无效 Die</div>
+            <div class="legend-item"><div class="legend-box" style="background:rgba(255,255,255,0.1);border:1px dashed #888;"></div> 切割道</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    仿真数据来源：FEM 数值模拟 · Si₃N₄ 平台 · λ = 1550 nm · 仅供参考
+  </footer>
+
+</div>
+
+<script src="wafer.js"></script>
+</body>
+</html>

@@ -5,434 +5,141 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>光子学工具箱 — Photonics Toolbox</title>
 <link rel="stylesheet" href="css/style.css">
+<style>
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .tool-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: all var(--duration-normal);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .tool-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    border-color: var(--color-primary);
+  }
+  .tool-card .tool-icon { font-size: 2rem; }
+  .tool-card .tool-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+  .tool-card .tool-desc {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+  .tool-card .tool-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: auto;
+  }
+  .tool-card .tool-tag {
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+  .tool-card.ext-link .tool-name::after {
+    content: ' ↗';
+    font-size: 0.75rem;
+    opacity: 0.5;
+  }
+  @media (max-width: 600px) {
+    .tool-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
 
 <div class="app-container">
 
-  <!-- Header -->
   <header class="app-header">
     <h1>🔬 光子学工具箱</h1>
     <p class="subtitle">Si₃N₄ 集成光子学 · 设计仿真与工艺计算</p>
-    <div style="margin-top:10px;">
-      <a href="waveguide-analyzer.html" style="display:inline-block;padding:6px 16px;background:var(--color-primary);color:#fff;border-radius:var(--radius-full);font-size:0.8rem;text-decoration:none;font-weight:500;transition:all var(--duration-fast);">🔍 波导截面 SEM 分析器 →</a>
-    </div>
   </header>
 
-  <!-- Tab Navigation -->
-  <nav class="tab-nav" id="tabNav">
-    <button class="tab-btn active" data-tab="waveguide">
-      <span class="tab-icon">📊</span>波导色散
-    </button>
-    <button class="tab-btn" data-tab="microring">
-      <span class="tab-icon">🔄</span>微环 FSR
-    </button>
-    <button class="tab-btn" data-tab="cbg-gdd">
-      <span class="tab-icon">🌊</span>CBG 色散
-    </button>
-    <button class="tab-btn" data-tab="wafer">
-      <span class="tab-icon">🪧</span>晶圆切割
-    </button>
-  </nav>
+  <div class="tool-grid">
 
-  <!-- ═══════════════ Panel 1: Waveguide Dispersion ═══════════ -->
-  <section class="tab-panel active" id="panel-waveguide">
-
-    <!-- Input Card -->
-    <div class="card">
-      <div class="card-header">波导参数</div>
-      <div class="input-group">
-        <div class="input-label-row">
-          <label for="wgWidthSlider">波导宽度</label>
-          <span class="unit">参考范围 0.8 – 7.0 μm</span>
-        </div>
-        <div class="slider-row">
-          <input type="range" id="wgWidthSlider" min="0.8" max="7.0" step="0.01" value="1.5">
-          <div class="number-input-wrap">
-            <input type="number" id="wgWidthInput" min="0.5" max="10" step="0.01" value="1.50">
-            <span class="unit-suffix">μm</span>
-          </div>
-        </div>
-        <div class="range-labels">
-          <span>0.8</span><span>1.5</span><span>2.5</span><span>4.0</span><span>5.5</span><span>7.0</span>
-        </div>
-        <div class="warning" id="wgWarning">⚠ 输入宽度超出仿真数据范围 (0.8–7.0 μm)，结果为线性外推，精度有限。</div>
+    <a class="tool-card" href="waveguide/">
+      <div class="tool-icon">📊</div>
+      <div class="tool-name">波导色散</div>
+      <div class="tool-desc">Si₃N₄ 脊形波导 — β₂, Aeff, ng, neff 随宽度变化曲线与插值计算</div>
+      <div class="tool-tags">
+        <span class="tool-tag">色散</span>
+        <span class="tool-tag">FEM数据</span>
+        <span class="tool-tag">1550 nm</span>
       </div>
-    </div>
+    </a>
 
-    <!-- Results -->
-    <div class="results-grid cols-4" id="wgResults">
-      <div class="result-card">
-        <div class="param-name">色散 β₂</div>
-        <div class="param-value" id="wgBeta2">--</div>
-        <div class="param-unit">ps²/km</div>
+    <a class="tool-card" href="microring/">
+      <div class="tool-icon">🔄</div>
+      <div class="tool-name">微环 FSR</div>
+      <div class="tool-desc">微环谐振器 — FSR ↔ 半径换算，光子寿命估算，预设波导参数</div>
+      <div class="tool-tags">
+        <span class="tool-tag">微环</span>
+        <span class="tool-tag">自由光谱范围</span>
+        <span class="tool-tag">Q值</span>
       </div>
-      <div class="result-card">
-        <div class="param-name">有效模场面积 A<sub>eff</sub></div>
-        <div class="param-value" id="wgAeff">--</div>
-        <div class="param-unit">×10⁻¹² m²</div>
+    </a>
+
+    <a class="tool-card" href="cbg-gdd/">
+      <div class="tool-icon">🌊</div>
+      <div class="tool-name">CBG 色散</div>
+      <div class="tool-desc">啁啾布拉格光栅 — GDD 群延时色散（拟合+物理模型），反常/正常色散</div>
+      <div class="tool-tags">
+        <span class="tool-tag">啁啾光栅</span>
+        <span class="tool-tag">GDD</span>
+        <span class="tool-tag">色散补偿</span>
       </div>
-      <div class="result-card">
-        <div class="param-name">群折射率 n<sub>g</sub></div>
-        <div class="param-value" id="wgNg">--</div>
-        <div class="param-unit">—</div>
+    </a>
+
+    <a class="tool-card" href="wafer/">
+      <div class="tool-icon">🪧</div>
+      <div class="tool-name">晶圆切割</div>
+      <div class="tool-desc">中心对齐网格法 — Die 数量估算，面积利用率，晶圆可视化</div>
+      <div class="tool-tags">
+        <span class="tool-tag">工艺</span>
+        <span class="tool-tag">良率</span>
+        <span class="tool-tag">4/6/8/12寸</span>
       </div>
-      <div class="result-card">
-        <div class="param-name">有效折射率 n<sub>eff</sub></div>
-        <div class="param-value" id="wgNeff">--</div>
-        <div class="param-unit">—</div>
+    </a>
+
+    <a class="tool-card ext-link" href="waveguide-analyzer.html">
+      <div class="tool-icon">🔍</div>
+      <div class="tool-name">波导截面 SEM 分析器</div>
+      <div class="tool-desc">SEM 图像分析 — 比例尺标定、ROI框选、灰度阈值/边缘辅助检测、截面尺寸提取</div>
+      <div class="tool-tags">
+        <span class="tool-tag">SEM</span>
+        <span class="tool-tag">图像分析</span>
+        <span class="tool-tag">Canny边缘</span>
+        <span class="tool-tag">Otsu阈值</span>
       </div>
-    </div>
+    </a>
 
-    <!-- Chart -->
-    <div class="chart-card">
-      <h3>数据曲线</h3>
-      <div class="chart-tabs" id="wgChartTabs">
-        <button class="chart-tab active" data-series="beta2">β₂</button>
-        <button class="chart-tab" data-series="aeff">A<sub>eff</sub></button>
-        <button class="chart-tab" data-series="ng">n<sub>g</sub></button>
-        <button class="chart-tab" data-series="neff">n<sub>eff</sub></button>
-        <button class="chart-tab" data-series="all">全部</button>
-      </div>
-      <div class="canvas-wrap">
-        <canvas id="wgChart"></canvas>
-      </div>
-    </div>
+  </div>
 
-    <!-- Data Table -->
-    <div class="table-card">
-      <h3 id="wgTableToggle">
-        仿真数据参考表
-        <span class="toggle-icon" id="wgToggleIcon">▼</span>
-      </h3>
-      <div id="wgTableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Width (μm)</th>
-              <th>β₂ (ps²/km)</th>
-              <th>A<sub>eff</sub> (×10⁻¹² m²)</th>
-              <th>n<sub>g</sub></th>
-              <th>n<sub>eff</sub></th>
-            </tr>
-          </thead>
-          <tbody id="wgTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- ═══════════════ Panel 2: Microring FSR ═══════════════ -->
-  <section class="tab-panel" id="panel-microring">
-
-    <div class="card">
-      <div class="card-header">参数设置</div>
-      <div class="formula-block">R = c / (n<sub>g</sub> · 2π · FSR)</div>
-
-      <div class="preset-row" id="mrPresets">
-        <span style="font-size:0.8rem;color:var(--color-text-secondary);align-self:center">预设波导：</span>
-        <button class="preset-btn active" data-ng="1.85">标准 Si₃N₄<br><span style="font-size:0.65rem">700×1500 nm</span></button>
-        <button class="preset-btn" data-ng="1.92">厚膜 Si₃N₄<br><span style="font-size:0.65rem">800×2000 nm</span></button>
-        <button class="preset-btn" data-ng="1.72">薄膜 Si₃N₄<br><span style="font-size:0.65rem">400×1000 nm</span></button>
-        <button class="preset-btn" data-ng="1.78">自定义</button>
-      </div>
-
-      <div class="input-group">
-        <div class="input-label-row">
-          <label for="mrFsr">FSR（自由光谱范围）</label>
-          <span class="unit" id="mrFsrVal">100 GHz</span>
-        </div>
-        <input type="range" id="mrFsr" min="10" max="1000" step="5" value="100">
-      </div>
-      <div class="input-group">
-        <div class="input-label-row">
-          <label for="mrNg">群折射率 n<sub>g</sub></label>
-          <span class="unit" id="mrNgVal">1.85</span>
-        </div>
-        <input type="range" id="mrNg" min="1.50" max="2.20" step="0.01" value="1.85">
-      </div>
-      <div class="input-group">
-        <div class="input-label-row">
-          <label for="mrLam">中心波长 λ</label>
-          <span class="unit" id="mrLamVal">1550 nm</span>
-        </div>
-        <input type="range" id="mrLam" min="1000" max="2000" step="10" value="1550">
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">计算结果</div>
-      <div class="results-grid cols-3" id="mrResults">
-        <div class="result-card">
-          <div class="param-name">环半径 R</div>
-          <div class="param-value" id="mrR">—</div>
-          <div class="param-unit">μm</div>
-        </div>
-        <div class="result-card">
-          <div class="param-name">周长 L = 2πR</div>
-          <div class="param-value" id="mrL">—</div>
-          <div class="param-unit">μm</div>
-        </div>
-        <div class="result-card">
-          <div class="param-name">直径 2R</div>
-          <div class="param-value" id="mrD">—</div>
-          <div class="param-unit">μm</div>
-        </div>
-        <div class="result-card">
-          <div class="param-name">FSR（波长域）</div>
-          <div class="param-value" id="mrFsrNm">—</div>
-          <div class="param-unit">nm</div>
-        </div>
-        <div class="result-card">
-          <div class="param-name">模式间距 Δν</div>
-          <div class="param-value" id="mrFsrGhz">—</div>
-          <div class="param-unit">GHz</div>
-        </div>
-        <div class="result-card">
-          <div class="param-name">腔内光子寿命 τ<br><span style="font-size:0.65rem;color:var(--color-text-tertiary)">(假设 Q = 10⁶)</span></div>
-          <div class="param-value" id="mrTau">—</div>
-          <div class="param-unit">ns</div>
-        </div>
-      </div>
-      <div class="info-note" id="mrNote"></div>
-    </div>
-
-  </section>
-
-  <!-- ═══════════════ Panel 3: CBG GDD Calculator ═══════════ -->
-  <section class="tab-panel" id="panel-cbg-gdd">
-
-    <!-- Input Card -->
-    <div class="card">
-      <div class="card-header">啁啾布拉格光栅参数</div>
-      <div class="formula-block">
-        |GDD|<sub>fit</sub> = k · N / Δλ &nbsp;&nbsp;|&nbsp;&nbsp;
-        |GDD|<sub>phys</sub> = n<sub>g</sub> · L · λ₀² / (π · c² · Δλ)
-      </div>
-
-      <!-- Waveguide Presets -->
-      <div class="preset-row" id="cbgPresets">
-        <span style="font-size:0.8rem;color:var(--color-text-secondary);align-self:center">预设波导：</span>
-        <button class="preset-btn active" data-ng="2.0" data-neff="1.9">标准 Si₃N₄<br><span style="font-size:0.65rem">n_eff=1.9 n_g=2.0</span></button>
-        <button class="preset-btn" data-ng="1.92" data-neff="1.85">厚膜 Si₃N₄<br><span style="font-size:0.65rem">800×2000 nm</span></button>
-        <button class="preset-btn" data-ng="1.78" data-neff="1.72">薄膜 Si₃N₄<br><span style="font-size:0.65rem">400×1000 nm</span></button>
-      </div>
-
-      <div class="input-group">
-        <div class="input-label-row">
-          <label for="cbgN">周期数 N</label>
-          <span class="unit" id="cbgNVal">500</span>
-        </div>
-        <input type="range" id="cbgN" min="10" max="2000" step="10" value="500">
-      </div>
-
-      <div class="input-group">
-        <div class="input-label-row">
-          <label for="cbgDlambda">波长带宽 Δλ</label>
-          <span class="unit" id="cbgDlambdaVal">80 nm</span>
-        </div>
-        <input type="range" id="cbgDlambda" min="1" max="300" step="1" value="80">
-      </div>
-
-      <div class="input-group">
-        <div class="input-label-row">
-          <label for="cbgLambda0">中心波长 λ₀</label>
-          <span class="unit" id="cbgLambda0Val">1550 nm</span>
-        </div>
-        <input type="range" id="cbgLambda0" min="800" max="2000" step="10" value="1550">
-      </div>
-
-      <div class="input-group">
-        <div class="input-label-row">
-          <label for="cbgNeff">有效折射率 n<sub>eff</sub></label>
-          <span class="unit" id="cbgNeffVal">1.90</span>
-        </div>
-        <input type="range" id="cbgNeff" min="1.40" max="3.50" step="0.01" value="1.90">
-      </div>
-
-      <div class="input-group">
-        <div class="input-label-row">
-          <label for="cbgNg">群折射率 n<sub>g</sub></label>
-          <span class="unit" id="cbgNgVal">2.00</span>
-        </div>
-        <input type="range" id="cbgNg" min="1.50" max="4.00" step="0.01" value="2.00">
-      </div>
-
-      <!-- Chirp Direction -->
-      <div class="input-group">
-        <label style="display:block;font-weight:600;font-size:0.875rem;margin-bottom:6px;">啁啾方向（色散符号）</label>
-        <div class="preset-row" id="cbgChirpGroup">
-          <button class="preset-btn active" data-chirp="short-first" style="flex:1;text-align:center;">
-            短波在前 λₘᵢₙ→λₘₐₓ<br><span style="font-size:0.65rem;">反常色散 GDD &lt; 0</span>
-          </button>
-          <button class="preset-btn" data-chirp="long-first" style="flex:1;text-align:center;">
-            长波在前 λₘₐₓ→λₘᵢₙ<br><span style="font-size:0.65rem;">正常色散 GDD &gt; 0</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="warning" id="cbgWarning"></div>
-    </div>
-
-    <!-- Results Card -->
-    <div class="card">
-      <div class="card-header">计算结果</div>
-      <div class="results-grid cols-2">
-        <div class="result-card">
-          <div class="param-name">群延时色散 |GDD|（拟合）</div>
-          <div class="param-value" id="cbgGddFit">—</div>
-          <div class="param-unit">ps²</div>
-        </div>
-        <div class="result-card">
-          <div class="param-name">群延时色散 |GDD|（物理）</div>
-          <div class="param-value" id="cbgGddPhys">—</div>
-          <div class="param-unit">ps²</div>
-        </div>
-        <div class="result-card">
-          <div class="param-name">光栅总长度 L</div>
-          <div class="param-value" id="cbgGratingLen">—</div>
-          <div class="param-unit">mm</div>
-        </div>
-        <div class="result-card">
-          <div class="param-name">单周期长度 Λ（Bragg 周期）</div>
-          <div class="param-value" id="cbgPeriodLen">—</div>
-          <div class="param-unit">nm</div>
-        </div>
-      </div>
-
-      <!-- Signed GDD (full width) -->
-      <div style="margin-top:12px;background:var(--color-primary-light);padding:14px 18px;border-radius:var(--radius);text-align:center;border:1px solid #b8daff;">
-        <div style="font-size:0.78rem;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;">带符号 GDD（考虑啁啾方向）</div>
-        <div style="font-family:var(--font-mono);font-size:1.5rem;font-weight:700;" id="cbgGddSigned">—</div>
-        <div style="font-size:0.75rem;color:var(--color-text-secondary);margin-top:2px;">ps² &nbsp;<span id="cbgDispBadge"></span></div>
-      </div>
-    </div>
-
-    <!-- Chart Card -->
-    <div class="chart-card">
-      <h3>|GDD| vs 带宽 Δλ（当前 N）</h3>
-      <p style="font-size:0.75rem;color:var(--color-text-tertiary);margin-bottom:8px;">
-        展示在当前周期数下，群延时色散随啁啾带宽的变化关系（拟合模型）。红色标记为当前工作点。
-      </p>
-      <div class="canvas-wrap">
-        <canvas id="cbgChart"></canvas>
-      </div>
-    </div>
-
-    <!-- Theory Card -->
-    <div class="card">
-      <div class="card-header">计算原理</div>
-      <div class="info-note">
-        <strong>① 拟合模型</strong>（经验验证 k = 5.600×10⁻³ ps²·nm，R² = 0.999999）<br>
-        <code style="background:var(--color-surface-secondary);padding:2px 6px;border-radius:4px;">|GDD| = k · N / Δλ_nm</code><br><br>
-
-        <strong>② 物理模型</strong>（从 Bragg 条件推导）<br>
-        <code style="background:var(--color-surface-secondary);padding:2px 6px;border-radius:4px;">Λ = λ₀ / (2 · n_eff)</code> — Bragg 周期<br>
-        <code style="background:var(--color-surface-secondary);padding:2px 6px;border-radius:4px;">L = N · Λ</code> — 光栅总长度<br>
-        <code style="background:var(--color-surface-secondary);padding:2px 6px;border-radius:4px;">|GDD| = n_g · L · λ₀² / (π · c² · Δλ)</code><br><br>
-
-        <strong>③ 色散符号</strong><br>
-        · 短波在前（λₘᵢₙ→λₘₐₓ）→ 短波先反射路程短、延迟小 → dτ/dλ > 0 → <strong>反常色散 GDD &lt; 0</strong><br>
-        · 长波在前（λₘₐₓ→λₘᵢₙ）→ 长波先反射路程长、延迟大 → dτ/dλ &lt; 0 → <strong>正常色散 GDD &gt; 0</strong>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- ═══════════════ Panel 4: Wafer Die Calculator ═══════════ -->
-  <section class="tab-panel" id="panel-wafer">
-
-    <div class="card">
-      <div class="split-layout">
-        <!-- Controls -->
-        <div class="split-controls">
-          <div class="card-header">晶圆参数设置</div>
-
-          <div class="input-group">
-            <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;">晶圆尺寸</label>
-            <select id="wfSize">
-              <option value="4">4 Inch (100 mm)</option>
-              <option value="6">6 Inch (150 mm)</option>
-              <option value="8" selected>8 Inch (200 mm)</option>
-              <option value="12">12 Inch (300 mm)</option>
-            </select>
-          </div>
-
-          <div style="display:flex;gap:10px;" class="input-group">
-            <div style="flex:1">
-              <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;">Die 宽度 X (mm)</label>
-              <input type="number" id="wfDieX" value="5.0" step="0.1" min="0.1" style="width:100%;padding:7px 10px;border:1px solid var(--color-border);border-radius:var(--radius);font-size:0.9rem;">
-            </div>
-            <div style="flex:1">
-              <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;">Die 高度 Y (mm)</label>
-              <input type="number" id="wfDieY" value="5.0" step="0.1" min="0.1" style="width:100%;padding:7px 10px;border:1px solid var(--color-border);border-radius:var(--radius);font-size:0.9rem;">
-            </div>
-          </div>
-
-          <div style="display:flex;gap:10px;" class="input-group">
-            <div style="flex:1">
-              <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;">切割道宽度 (mm)</label>
-              <input type="number" id="wfScribe" value="0.10" step="0.01" min="0" style="width:100%;padding:7px 10px;border:1px solid var(--color-border);border-radius:var(--radius);font-size:0.9rem;">
-            </div>
-            <div style="flex:1">
-              <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;">边缘去除 (mm)</label>
-              <input type="number" id="wfEdge" value="3.0" step="0.1" min="0" style="width:100%;padding:7px 10px;border:1px solid var(--color-border);border-radius:var(--radius);font-size:0.9rem;">
-            </div>
-          </div>
-
-          <div class="results-panel">
-            <h3>计算结果</h3>
-            <div class="result-item">
-              <span>有效芯片 (Good Dies):</span>
-              <strong id="wfGood">0</strong>
-            </div>
-            <div class="result-item">
-              <span>残缺/边缘芯片 (Partial):</span>
-              <span id="wfPartial">0</span>
-            </div>
-            <div class="result-item">
-              <span>总计 (Total):</span>
-              <span id="wfTotal">0</span>
-            </div>
-            <div class="result-item">
-              <span>晶圆面积利用率:</span>
-              <span id="wfUtil">0%</span>
-            </div>
-          </div>
-
-          <p class="info-note">* 计算基于中心对齐网格法。1 Inch = 25.4 mm。</p>
-        </div>
-
-        <!-- Visualization -->
-        <div class="split-viz">
-          <div class="wafer-viz">
-            <canvas id="wfCanvas" width="500" height="500"></canvas>
-            <div class="legend">
-              <div class="legend-item"><div class="legend-box" style="background:#2ecc71;"></div> 有效 Die</div>
-              <div class="legend-item"><div class="legend-box" style="background:#e74c3c;"></div> 无效 Die</div>
-              <div class="legend-item"><div class="legend-box" style="background:rgba(255,255,255,0.1);border:1px dashed #888;"></div> 切割道</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- Footer -->
   <footer class="app-footer">
     仿真数据来源：FEM 数值模拟 · Si₃N₄ 平台 · λ = 1550 nm · 仅供参考
   </footer>
 
 </div>
-
-<!-- Scripts: load modules first, then app controller -->
-<script src="js/waveguide.js"></script>
-<script src="js/microring.js"></script>
-<script src="js/cbg-gdd.js"></script>
-<script src="js/wafer.js"></script>
-<script src="js/app.js"></script>
 
 </body>
 </html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBG 色散 — 光子学工具箱</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+
+  <header class="app-header">
+    <h1>🌊 CBG 色散</h1>
+    <p class="subtitle"><a href="../">← 返回工具列表</a> | 啁啾布拉格光栅群延时色散 GDD 计算</p>
+  </header>
+
+  <div class="card">
+    <div class="card-header">啁啾布拉格光栅参数</div>
+    <div class="formula-block">
+      |GDD|<sub>fit</sub> = k · N / Δλ &nbsp;&nbsp;|&nbsp;&nbsp;
+      |GDD|<sub>phys</sub> = n<sub>g</sub> · L · λ₀² / (π · c² · Δλ)
+    </div>
+
+    <div class="preset-row" id="cbgPresets">
+      <span style="font-size:0.8rem;color:var(--color-text-secondary);align-self:center">预设波导：</span>
+      <button class="preset-btn active" data-ng="2.0" data-neff="1.9">标准 Si₃N₄<br><span style="font-size:0.65rem">n_eff=1.9 n_g=2.0</span></button>
+      <button class="preset-btn" data-ng="1.92" data-neff="1.85">厚膜 Si₃N₄<br><span style="font-size:0.65rem">800×2000 nm</span></button>
+      <button class="preset-btn" data-ng="1.78" data-neff="1.72">薄膜 Si₃N₄<br><span style="font-size:0.65rem">400×1000 nm</span></button>
+    </div>
+
+    <div class="input-group">
+      <div class="input-label-row">
+        <label for="cbgN">周期数 N</label>
+        <span class="unit" id="cbgNVal">500</span>
+      </div>
+      <input type="range" id="cbgN" min="10" max="2000" step="10" value="500">
+    </div>
+    <div class="input-group">
+      <div class="input-label-row">
+        <label for="cbgDlambda">波长带宽 Δλ</label>
+        <span class="unit" id="cbgDlambdaVal">80 nm</span>
+      </div>
+      <input type="range" id="cbgDlambda" min="1" max="300" step="1" value="80">
+    </div>
+    <div class="input-group">
+      <div class="input-label-row">
+        <label for="cbgLambda0">中心波长 λ₀</label>
+        <span class="unit" id="cbgLambda0Val">1550 nm</span>
+      </div>
+      <input type="range" id="cbgLambda0" min="800" max="2000" step="10" value="1550">
+    </div>
+    <div class="input-group">
+      <div class="input-label-row">
+        <label for="cbgNeff">有效折射率 n<sub>eff</sub></label>
+        <span class="unit" id="cbgNeffVal">1.90</span>
+      </div>
+      <input type="range" id="cbgNeff" min="1.40" max="3.50" step="0.01" value="1.90">
+    </div>
+    <div class="input-group">
+      <div class="input-label-row">
+        <label for="cbgNg">群折射率 n<sub>g</sub></label>
+        <span class="unit" id="cbgNgVal">2.00</span>
+      </div>
+      <input type="range" id="cbgNg" min="1.50" max="4.00" step="0.01" value="2.00">
+    </div>
+
+    <div class="input-group">
+      <label style="display:block;font-weight:600;font-size:0.875rem;margin-bottom:6px;">啁啾方向（色散符号）</label>
+      <div class="preset-row" id="cbgChirpGroup">
+        <button class="preset-btn active" data-chirp="short-first" style="flex:1;text-align:center;">
+          短波在前 λₘᵢₙ→λₘₐₓ<br><span style="font-size:0.65rem;">反常色散 GDD &lt; 0</span>
+        </button>
+        <button class="preset-btn" data-chirp="long-first" style="flex:1;text-align:center;">
+          长波在前 λₘₐₓ→λₘᵢₙ<br><span style="font-size:0.65rem;">正常色散 GDD &gt; 0</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="warning" id="cbgWarning"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">计算结果</div>
+    <div class="results-grid cols-2">
+      <div class="result-card">
+        <div class="param-name">群延时色散 |GDD|（拟合）</div>
+        <div class="param-value" id="cbgGddFit">—</div>
+        <div class="param-unit">ps²</div>
+      </div>
+      <div class="result-card">
+        <div class="param-name">群延时色散 |GDD|（物理）</div>
+        <div class="param-value" id="cbgGddPhys">—</div>
+        <div class="param-unit">ps²</div>
+      </div>
+      <div class="result-card">
+        <div class="param-name">光栅总长度 L</div>
+        <div class="param-value" id="cbgGratingLen">—</div>
+        <div class="param-unit">mm</div>
+      </div>
+      <div class="result-card">
+        <div class="param-name">单周期长度 Λ（Bragg 周期）</div>
+        <div class="param-value" id="cbgPeriodLen">—</div>
+        <div class="param-unit">nm</div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;background:var(--color-primary-light);padding:14px 18px;border-radius:var(--radius);text-align:center;border:1px solid #b8daff;">
+      <div style="font-size:0.78rem;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;">带符号 GDD（考虑啁啾方向）</div>
+      <div style="font-family:var(--font-mono);font-size:1.5rem;font-weight:700;" id="cbgGddSigned">—</div>
+      <div style="font-size:0.75rem;color:var(--color-text-secondary);margin-top:2px;">ps² &nbsp;<span id="cbgDispBadge"></span></div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h3>|GDD| vs 带宽 Δλ（当前 N）</h3>
+    <p style="font-size:0.75rem;color:var(--color-text-tertiary);margin-bottom:8px;">
+      展示在当前周期数下，群延时色散随啁啾带宽的变化关系（拟合模型）。红色标记为当前工作点。
+    </p>
+    <div class="canvas-wrap">
+      <canvas id="cbgChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">计算原理</div>
+    <div class="info-note">
+      <strong>① 拟合模型</strong>（经验验证 k = 5.600×10⁻³ ps²·nm，R² = 0.999999）<br>
+      <code style="background:var(--color-surface-secondary);padding:2px 6px;border-radius:4px;">|GDD| = k · N / Δλ_nm</code><br><br>
+
+      <strong>② 物理模型</strong>（从 Bragg 条件推导）<br>
+      <code style="background:var(--color-surface-secondary);padding:2px 6px;border-radius:4px;">Λ = λ₀ / (2 · n_eff)</code> — Bragg 周期<br>
+      <code style="background:var(--color-surface-secondary);padding:2px 6px;border-radius:4px;">L = N · Λ</code> — 光栅总长度<br>
+      <code style="background:var(--color-surface-secondary);padding:2px 6px;border-radius:4px;">|GDD| = n_g · L · λ₀² / (π · c² · Δλ)</code><br><br>
+
+      <strong>③ 色散符号</strong><br>
+      · 短波在前（λₘᵢₙ→λₘₐₓ）→ 短波先反射路程短、延迟小 → dτ/dλ > 0 → <strong>反常色散 GDD &lt; 0</strong><br>
+      · 长波在前（λₘₐₓ→λₘᵢₙ）→ 长波先反射路程长、延迟大 → dτ/dλ &lt; 0 → <strong>正常色散 GDD &gt; 0</strong>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    仿真数据来源：FEM 数值模拟 · Si₃N₄ 平台 · λ = 1550 nm · 仅供参考
+  </footer>
+
+</div>
+
+<script src="cbg-gdd.js"></script>
+</body>
+</html>
