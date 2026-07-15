@@ -9,6 +9,7 @@
   const registry = {
     waveguide: { module: WaveguideModule,   panel: 'panel-waveguide',  initialized: false },
     microring: { module: MicroringModule,   panel: 'panel-microring',  initialized: false },
+    'cbg-gdd': { module: CbgGddModule,     panel: 'panel-cbg-gdd',    initialized: false },
     wafer:     { module: WaferModule,       panel: 'panel-wafer',      initialized: false }
   };
 
