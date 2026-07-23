@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>波导色散 — 光子学工具箱</title>
+<title>波导色散 - 光子学工具箱</title>
 <link rel="stylesheet" href="../css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
@@ -20,157 +20,139 @@
 .results-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:16px; }
 .result-card { background:#1e293b; padding:14px; border-radius:8px; text-align:center;
     border:1px solid #334155; }
-.result-card .name { color:#64748b; font-size:11px; margin-bottom:4px; }
-.result-card .value { color:#e2e8f0; font-size:20px; font-weight:700; font-family:monospace; }
-.result-card .unit { color:#64748b; font-size:11px; }
+.result-card .rname { color:#64748b; font-size:11px; margin-bottom:4px; }
+.result-card .rval { color:#e2e8f0; font-size:20px; font-weight:700; font-family:monospace; }
+.result-card .runit { color:#64748b; font-size:11px; }
 .chart-box { background:#0f172a; border-radius:8px; padding:16px; border:1px solid #334155; }
 .chart-box canvas { width:100% !important; }
 .panel { display:none; }
-.panel.active { display:block; }
+.panel.on { display:block; }
 .range-labels { display:flex; justify-content:space-between; font-size:10px; color:#475569; }
-.warning { background:#422006; color:#fbbf24; padding:10px 14px; border-radius:6px;
-    font-size:12px; margin-bottom:12px; display:none; }
 .footer-note { text-align:center; color:#475569; font-size:12px; margin-top:12px; }
 </style>
 </head>
 <body>
 <div class="container">
   <header class="app-header">
-    <h1>波导色散 <span style="font-weight:300;color:#64748b;">— 光子学工具箱</span></h1>
-    <p>Si3N4 脊形波导 · phys-4 物理模型 · 双维度查询</p>
+    <h1>波导色散 <span style="font-weight:300;color:#64748b;">- 光子学工具箱</span></h1>
+    <p>Si3N4 脊形波导 · phys-4 neff + poly44 Aeff · 点线面</p>
     <a href="../index.html" class="back-link">← 返回工具列表</a>
   </header>
 
   <div class="mode-tabs">
-    <button class="mode-tab active" data-mode="point" id="tabPoint">◆ 点</button>
-    <button class="mode-tab" data-mode="line" id="tabLine">〰 线</button>
-    <button class="mode-tab" data-mode="surface" id="tabSurface">▣ 面</button>
+    <button class="mode-tab active" data-mode="point">◆ 点</button>
+    <button class="mode-tab" data-mode="line">〰 线</button>
+    <button class="mode-tab" data-mode="surface">▣ 面</button>
   </div>
-
-  <div class="warning" id="wgWarning">输入超出推荐范围，结果为模型外推。</div>
 
   <div class="card">
     <div class="card-title">波导参数</div>
     <div class="input-group">
-      <label>波导宽度 <span id="wgWidthLabel">1.500000 um</span></label>
-      <input type="range" id="wgWidthSlider" min="0.8" max="7.0" step="0.01" value="1.5">
+      <label>波导宽度 <span id="wLabel">1.500000 um</span></label>
+      <input type="range" id="wSlider" min="0.8" max="7.0" step="0.01" value="1.5">
       <div class="range-labels"><span>0.8</span><span>1.5</span><span>2.5</span><span>4.0</span><span>5.5</span><span>7.0</span></div>
     </div>
     <div class="input-group">
-      <label>波长 <span id="wgLambdaLabel">1550 nm</span></label>
-      <input type="range" id="wgLambdaSlider" min="1300" max="1800" step="1" value="1550">
+      <label>波长 <span id="lLabel">1550 nm</span></label>
+      <input type="range" id="lSlider" min="1300" max="1800" step="1" value="1550">
       <div class="range-labels"><span>1300</span><span>1400</span><span>1500</span><span>1550</span><span>1600</span><span>1700</span><span>1800 nm</span></div>
     </div>
   </div>
 
-  <div class="panel active" id="panelPoint">
+  <!-- 点模式 -->
+  <div class="panel on" id="panelPoint">
     <div class="results-grid">
-      <div class="result-card"><div class="name">色散 beta2</div><div class="value" id="wgBeta2">--</div><div class="unit">ps2/km</div></div>
-      <div class="result-card"><div class="name">模场面积 Aeff</div><div class="value" id="wgAeff">--</div><div class="unit">x10^-12 m2</div></div>
-      <div class="result-card"><div class="name">群折射率 ng</div><div class="value" id="wgNg">--</div><div class="unit"></div></div>
-      <div class="result-card"><div class="name">有效折射率 neff</div><div class="value" id="wgNeff">--</div><div class="unit"></div></div>
+      <div class="result-card"><div class="rname">beta2</div><div class="rval" id="vBeta2">--</div><div class="runit">ps2/km</div></div>
+      <div class="result-card"><div class="rname">Aeff</div><div class="rval" id="vAeff">--</div><div class="runit">x10^-12 m2</div></div>
+      <div class="result-card"><div class="rname">ng</div><div class="rval" id="vNg">--</div><div class="runit"></div></div>
+      <div class="result-card"><div class="rname">neff</div><div class="rval" id="vNeff">--</div><div class="runit"></div></div>
     </div>
   </div>
 
+  <!-- 线模式 -->
   <div class="panel" id="panelLine">
     <div class="chart-box" style="height:340px"><canvas id="lineChart"></canvas></div>
   </div>
 
+  <!-- 面模式 -->
   <div class="panel" id="panelSurface">
     <div class="chart-box" style="height:440px"><canvas id="surfaceCanvas"></canvas></div>
   </div>
 
-  <div class="footer-note">phys-4: neff(w,f)=A+Bf+Cf2+Df3+E/w+F/w2+G/w3+Hf/w+If2/w+Jf/w2 | R2=0.999926 | RMSE=0.000292</div>
+  <div class="footer-note">neff: phys-4 (R2=0.999926) | Aeff: poly44 (R2=0.990184) | RMSE(neff)=0.000292</div>
 </div>
 
 <script src="waveguide.js"></script>
 <script>
 (function() {
-    var wSlider = document.getElementById('wgWidthSlider'),
-        wLabel  = document.getElementById('wgWidthLabel'),
-        lSlider = document.getElementById('wgLambdaSlider'),
-        lLabel  = document.getElementById('wgLambdaLabel'),
-        elBeta2 = document.getElementById('wgBeta2'),
-        elAeff  = document.getElementById('wgAeff'),
-        elNg    = document.getElementById('wgNg'),
-        elNeff  = document.getElementById('wgNeff'),
-        warning = document.getElementById('wgWarning'),
-        lineChart = null,
-        currentMode = 'point',
-        tabs, panels, lineDirty = false, surfaceDirty = false;
+    var wSlider = document.getElementById('wSlider');
+    var wLabel  = document.getElementById('wLabel');
+    var lSlider = document.getElementById('lSlider');
+    var lLabel  = document.getElementById('lLabel');
+    var vBeta2  = document.getElementById('vBeta2');
+    var vAeff   = document.getElementById('vAeff');
+    var vNg     = document.getElementById('vNg');
+    var vNeff   = document.getElementById('vNeff');
+    var tabs    = document.querySelectorAll('.mode-tab');
+    var panels  = document.querySelectorAll('.panel');
+    var currentMode = 'point';
+    var lineChart = null;
 
     function getW() { return parseFloat(wSlider.value); }
     function getL() { return parseInt(lSlider.value); }
 
     function updatePoint() {
-        var w = getW(), lam = getL(), r = computeAll(w, lam);
-        elBeta2.textContent = r.beta2.toFixed(6);
-        elAeff.textContent  = r.aeff.toFixed(6);
-        elNg.textContent    = r.ng.toFixed(6);
-        elNeff.textContent  = r.neff.toFixed(6);
-        warning.style.display = (w < 0.79 || w > 7.01 || lam < 1299 || lam > 1801) ? 'block' : 'none';
+        var r = computeAll(getW(), getL());
+        vBeta2.textContent = r.beta2.toFixed(6);
+        vAeff.textContent  = (r.aeff*1e12).toFixed(6);
+        vNg.textContent    = r.ng.toFixed(6);
+        vNeff.textContent  = r.neff.toFixed(6);
     }
 
     function drawLine() {
-        var w = getW(), lamArr = [], i;
-        for (i = 1300; i <= 1800; i++) lamArr.push(i);
-        var neffArr = neffSpectrum(w, lamArr);
-        var idx1550 = 250;
-        var n1550 = neffArr[idx1550];
+        var w = getW(), lam = [], i;
+        for (i = 1300; i <= 1800; i++) lam.push(i);
+        var nf = neffSpectrum(w, lam);
+        var i1550 = 250, n1550 = nf[i1550];
 
-        var canvas = document.getElementById('lineChart');
-        var ctx = canvas.getContext('2d');
+        var ctx = document.getElementById('lineChart').getContext('2d');
         if (lineChart) { lineChart.destroy(); lineChart = null; }
-
-        canvas.style.height = '300px';
 
         lineChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: lamArr,
+                labels: lam,
                 datasets: [{
-                    label: 'neff  w=' + w.toFixed(2) + ' um',
-                    data: neffArr,
-                    borderColor: '#3b82f6',
-                    borderWidth: 2.5,
-                    pointRadius: 0,
-                    tension: 0.1,
-                    fill: false
+                    label: 'neff w=' + w.toFixed(2) + ' um',
+                    data: nf, borderColor: '#3b82f6', borderWidth: 2.5,
+                    pointRadius: 0, tension: 0.1, fill: false
                 }, {
-                    label: '1550 nm  neff=' + n1550.toFixed(6),
-                    data: lamArr.map(function(_, i) { return i === idx1550 ? n1550 : null; }),
-                    borderWidth: 0,
-                    pointRadius: 8,
-                    pointBackgroundColor: '#ef4444',
-                    pointStyle: 'rectRot',
-                    showLine: false
+                    label: '1550nm neff=' + n1550.toFixed(6),
+                    data: lam.map(function(_,i){ return i===i1550?n1550:null; }),
+                    borderWidth: 0, pointRadius: 8, pointBackgroundColor: '#ef4444',
+                    pointStyle: 'rectRot', showLine: false
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: false,
-                plugins: {
-                    legend: { labels: { color: '#94a3b8', font: { size: 12 }, boxWidth: 14 } },
-                    tooltip: { callbacks: { label: function(ctx) { return ctx.parsed.y !== undefined ? 'neff = ' + ctx.parsed.y.toFixed(6) : ''; } } }
-                },
+                responsive: true, maintainAspectRatio: false, animation: false,
+                plugins: { legend: { labels: { color: '#94a3b8', font: {size:12}, boxWidth:14 } } },
                 scales: {
-                    x: { title: { display: true, text: 'wavelength (nm)', color: '#94a3b8' },
-                         ticks: { color: '#64748b', maxTicksLimit: 12 }, grid: { color: '#1e293b' } },
-                    y: { title: { display: true, text: 'Re(neff)', color: '#94a3b8' },
-                         ticks: { color: '#64748b', callback: function(v) { return v.toFixed(6); } },
-                         grid: { color: '#1e293b' } }
+                    x: { title: { display:true, text:'wavelength (nm)', color:'#94a3b8' },
+                         ticks: { color:'#64748b', maxTicksLimit:12 }, grid: { color:'#1e293b' } },
+                    y: { title: { display:true, text:'Re(neff)', color:'#94a3b8' },
+                         ticks: { color:'#64748b', callback: function(v){ return v.toFixed(6); } },
+                         grid: { color:'#1e293b' } }
                 }
             }
         });
-        lineDirty = false;
     }
 
     function drawSurface() {
         var canvas = document.getElementById('surfaceCanvas');
         var dpr = window.devicePixelRatio || 1;
         var box = canvas.parentElement;
-        var W = box.clientWidth - 32, H = 420;
+        var W = box.clientWidth - 32;
+        var H = 420;
         canvas.width = W * dpr;
         canvas.height = H * dpr;
         canvas.style.width = W + 'px';
@@ -178,119 +160,95 @@
         var ctx = canvas.getContext('2d');
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        var pad = { top: 10, right: 24, bottom: 45, left: 64 };
+        var pad = {top:10, right:24, bottom:45, left:64};
         var pw = W - pad.left - pad.right;
         var ph = H - pad.top - pad.bottom;
 
-        var nwGrid = 35, nlGrid = 51;
-        var wGrid = [], lamGrid = [];
-        for (var i = 0; i < nwGrid; i++) wGrid.push(0.8 + i * 2.2 / (nwGrid - 1));
-        for (var j = 0; j < nlGrid; j++) lamGrid.push(1300 + j * 10);
+        var nw=35, nl=51, wG=[], lG=[];
+        for (var i=0; i<nw; i++) wG.push(0.8 + i*2.2/(nw-1));
+        for (var j=0; j<nl; j++) lG.push(1300 + j*10);
 
-        var grid = neffGrid(wGrid, lamGrid);
-        var vmin = Infinity, vmax = -Infinity;
-        for (var i2 = 0; i2 < nwGrid; i2++)
-            for (var j2 = 0; j2 < nlGrid; j2++) {
+        var grid = neffGrid(wG, lG);
+        var vmin=Infinity, vmax=-Infinity;
+        for (var i2=0; i2<nw; i2++)
+            for (var j2=0; j2<nl; j2++) {
                 if (grid[i2][j2] < vmin) vmin = grid[i2][j2];
                 if (grid[i2][j2] > vmax) vmax = grid[i2][j2];
             }
 
-        var dx = pw / nlGrid, dy = ph / nwGrid;
-        for (var i3 = 0; i3 < nwGrid; i3++)
-            for (var j3 = 0; j3 < nlGrid; j3++) {
-                ctx.fillStyle = jetColor((grid[i3][j3] - vmin) / (vmax - vmin));
-                ctx.fillRect(pad.left + j3*dx, pad.top + i3*dy, dx + 0.5, dy + 0.5);
+        var dx=pw/nl, dy=ph/nw;
+        for (var i3=0; i3<nw; i3++)
+            for (var j3=0; j3<nl; j3++) {
+                ctx.fillStyle = jet((grid[i3][j3]-vmin)/(vmax-vmin));
+                ctx.fillRect(pad.left+j3*dx, pad.top+i3*dy, dx+0.5, dy+0.5);
             }
 
-        ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, pad.top + ph);
-        ctx.lineTo(pad.left + pw, pad.top + ph);
-        ctx.stroke();
+        ctx.strokeStyle='#64748b'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(pad.left,pad.top); ctx.lineTo(pad.left,pad.top+ph);
+        ctx.lineTo(pad.left+pw,pad.top+ph); ctx.stroke();
 
-        ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
-        for (var lam = 1300; lam <= 1800; lam += 100)
-            ctx.fillText(lam, pad.left + (lam-1300)/500*pw, pad.top + ph + 16);
-        ctx.fillText('wavelength (nm)', pad.left + pw/2, pad.top + ph + 36);
+        ctx.fillStyle='#94a3b8'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+        for (var lam=1300; lam<=1800; lam+=100)
+            ctx.fillText(lam, pad.left+(lam-1300)/500*pw, pad.top+ph+16);
+        ctx.fillText('wavelength (nm)', pad.left+pw/2, pad.top+ph+36);
 
-        ctx.textAlign = 'right';
-        for (var wv = 1.0; wv <= 3.0; wv += 0.5)
-            ctx.fillText(wv.toFixed(1), pad.left - 8, pad.top + (wv-0.8)/2.2*ph + 4);
-        ctx.save();
-        ctx.translate(14, pad.top + ph/2);
-        ctx.rotate(-Math.PI/2);
-        ctx.textAlign = 'center';
-        ctx.fillText('width (um)', 0, 0);
-        ctx.restore();
+        ctx.textAlign='right';
+        for (var wv=1.0; wv<=3.0; wv+=0.5)
+            ctx.fillText(wv.toFixed(1), pad.left-8, pad.top+(wv-0.8)/2.2*ph+4);
+        ctx.save(); ctx.translate(14, pad.top+ph/2); ctx.rotate(-Math.PI/2);
+        ctx.textAlign='center'; ctx.fillText('width (um)', 0, 0); ctx.restore();
 
-        var cbX = pad.left + pw + 6, cbW = 12, cbH = ph;
-        for (var k = 0; k < cbH; k++) {
-            ctx.fillStyle = jetColor(1 - k / cbH);
-            ctx.fillRect(cbX, pad.top + k, cbW, 1);
+        var cbX=pad.left+pw+6, cbW=12, cbH=ph;
+        for (var k=0; k<cbH; k++) {
+            ctx.fillStyle = jet(1 - k/cbH);
+            ctx.fillRect(cbX, pad.top+k, cbW, 1);
         }
         ctx.strokeRect(cbX, pad.top, cbW, cbH);
-        ctx.fillStyle = '#94a3b8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'left';
-        ctx.fillText(vmax.toFixed(6), cbX + cbW + 4, pad.top + 12);
-        ctx.fillText(vmin.toFixed(6), cbX + cbW + 4, pad.top + ph);
-        ctx.fillText('neff', cbX + cbW + 4, pad.top + ph/2 + 4);
-        surfaceDirty = false;
+        ctx.fillStyle='#94a3b8'; ctx.font='10px sans-serif'; ctx.textAlign='left';
+        ctx.fillText(vmax.toFixed(6), cbX+cbW+4, pad.top+12);
+        ctx.fillText(vmin.toFixed(6), cbX+cbW+4, pad.top+ph);
+        ctx.fillText('neff', cbX+cbW+4, pad.top+ph/2+4);
     }
 
-    function jetColor(t) {
+    function jet(t) {
         t = Math.max(0, Math.min(1, t));
         var r, g, b;
-        if (t < 0.125)      { r = 0;           g = 0;             b = 0.5 + t * 4; }
-        else if (t < 0.375) { r = 0;           g = (t-0.125)*4;   b = 1; }
-        else if (t < 0.625) { r = (t-0.375)*4; g = 1;             b = 1 - (t-0.375)*4; }
-        else if (t < 0.875) { r = 1;           g = 1-(t-0.625)*4; b = 0; }
-        else                { r = 1-(t-0.875)*4; g = 0;            b = 0; }
-        return 'rgb(' + Math.round(r*255) + ',' + Math.round(g*255) + ',' + Math.round(b*255) + ')';
-    }
-
-    function updateAll() {
-        updatePoint();
-        /* mark charts dirty rather than redrawing immediately */
-        if (currentMode === 'line') lineDirty = true;
-        if (currentMode === 'surface') surfaceDirty = true;
-        /* only redraw if visible */
-        if (currentMode === 'line') { requestAnimationFrame(function() { if (lineDirty) drawLine(); }); }
-        if (currentMode === 'surface') { requestAnimationFrame(function() { if (surfaceDirty) drawSurface(); }); }
+        if (t<0.125) { r=0; g=0; b=0.5+t*4; }
+        else if (t<0.375) { r=0; g=(t-0.125)*4; b=1; }
+        else if (t<0.625) { r=(t-0.375)*4; g=1; b=1-(t-0.375)*4; }
+        else if (t<0.875) { r=1; g=1-(t-0.625)*4; b=0; }
+        else { r=1-(t-0.875)*4; g=0; b=0; }
+        return 'rgb('+Math.round(r*255)+','+Math.round(g*255)+','+Math.round(b*255)+')';
     }
 
     function switchMode(mode) {
         currentMode = mode;
-        tabs.forEach(function(t) {
-            t.classList.toggle('active', t.dataset.mode === mode);
-        });
-        panels.forEach(function(p) {
-            p.classList.toggle('active', p.id === 'panel' + mode.charAt(0).toUpperCase() + mode.slice(1));
-        });
-        /* redraw after panel becomes visible */
-        if (mode === 'line') requestAnimationFrame(function() { drawLine(); });
-        if (mode === 'surface') requestAnimationFrame(function() { drawSurface(); });
+        tabs.forEach(function(t){ t.classList.toggle('active', t.dataset.mode===mode); });
+        panels.forEach(function(p){ p.classList.toggle('on', p.id==='panel'+mode.charAt(0).toUpperCase()+mode.slice(1)); });
+        if (mode==='line') requestAnimationFrame(function(){ drawLine(); });
+        if (mode==='surface') requestAnimationFrame(function(){ drawSurface(); });
     }
 
-    tabs = document.querySelectorAll('.mode-tab');
-    panels = document.querySelectorAll('.panel');
-    tabs.forEach(function(t) {
-        t.addEventListener('click', function() { switchMode(t.dataset.mode); });
+    tabs.forEach(function(t){
+        t.addEventListener('click', function(){ switchMode(t.dataset.mode); });
     });
 
-    wSlider.addEventListener('input', function() {
+    wSlider.addEventListener('input', function(){
         wLabel.textContent = getW().toFixed(6) + ' um';
-        updateAll();
+        updatePoint();
+        if (currentMode==='line') drawLine();
     });
-    lSlider.addEventListener('input', function() {
+    lSlider.addEventListener('input', function(){
         lLabel.textContent = getL() + ' nm';
-        updateAll();
+        updatePoint();
+        if (currentMode==='line') drawLine();
+    });
+    window.addEventListener('resize', function(){
+        if (currentMode==='surface') drawSurface();
+        if (currentMode==='line' && lineChart) lineChart.resize();
     });
 
-    window.addEventListener('resize', function() {
-        if (currentMode === 'surface') drawSurface();
-        if (currentMode === 'line' && lineChart) lineChart.resize();
-    });
-
-    updateAll();
+    updatePoint();
 })();
 </script>
 </body>
